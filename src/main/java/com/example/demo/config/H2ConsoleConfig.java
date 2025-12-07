@@ -13,10 +13,9 @@ public class H2ConsoleConfig {
         try {
             Class<?> clazz = Class.forName("org.h2.server.web.JakartaWebServlet");
             Servlet servlet = (Servlet) clazz.getDeclaredConstructor().newInstance();
-
             return new ServletRegistrationBean<>(servlet, "/h2-console/*");
         } catch (Exception e) {
-            throw new IllegalStateException("H2 JakartaWebServlet not available on classpath", e);
+            throw new IllegalStateException("H2 JakartaWebServlet not available", e);
         }
     }
 }
