@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Management System</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            background-color: #f5f5f5;
+            padding: 20px;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border: 1px solid #ddd;
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 24px;
+            font-weight: normal;
+        }
+
+        .subtitle {
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #333;
+        }
+
+        .section {
+            margin-bottom: 40px;
+        }
+
+        .section-title {
+            font-size: 16px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .form-container {
+            background: #fafafa;
+            padding: 20px;
+            border: 1px solid #e0e0e0;
+            margin-bottom: 20px;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-size: 13px;
+            color: #555;
+            font-weight: 600;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 8px 10px;
+            border: 1px solid #ccc;
+            font-size: 14px;
+            font-family: Arial, sans-serif;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #333;
+        }
+
+        .form-actions {
+            margin-top: 15px;
+        }
+
+        button {
+            padding: 10px 20px;
+            border: none;
+            font-size: 13px;
+            cursor: pointer;
+            font-family: Arial, sans-serif;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .btn-primary {
+            background: #333;
+            color: white;
+            margin-right: 10px;
+        }
+
+        .btn-primary:hover {
+            background: #555;
+        }
+
+        .btn-secondary {
+            background: #888;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #666;
+        }
+
+        .btn-action {
+            padding: 5px 12px;
+            font-size: 12px;
+            margin-right: 5px;
+        }
+
+        .btn-edit {
+            background: white;
+            color: #333;
+            border: 1px solid #333;
+        }
+
+        .btn-edit:hover {
+            background: #333;
+            color: white;
+        }
+
+        .btn-delete {
+            background: #d32f2f;
+            color: white;
+        }
+
+        .btn-delete:hover {
+            background: #b71c1c;
+        }
+
+        .alert {
+            padding: 12px 15px;
+            margin-bottom: 20px;
+            font-size: 13px;
+            border-left: 3px solid;
+            display: none;
+        }
+
+        .alert-success {
+            background: #f1f8f4;
+            border-color: #4caf50;
+            color: #2e7d32;
+        }
+
+        .alert-error {
+            background: #fef5f5;
+            border-color: #d32f2f;
+            color: #c62828;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+        }
+
+        table thead {
+            background: #333;
+            color: white;
+        }
+
+        table th {
+            padding: 12px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        table tbody tr {
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        table tbody tr:hover {
+            background: #fafafa;
+        }
+
+        table td {
+            padding: 12px;
+            color: #333;
+        }
+
+        .loading, .empty {
+            text-align: center;
+            padding: 40px;
+            color: #999;
+            font-size: 14px;
+        }
+
+        #studentsTable {
+            display: none;
+        }
+
+        @media (max-width: 768px) {
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>Student Management System</h1>
+    <div class="subtitle">CRUD Application - Clean Architecture Implementation</div>
+
+    <div id="alertSuccess" class="alert alert-success"></div>
+    <div id="alertError" class="alert alert-error"></div>
+
+    <div class="section">
+        <div class="section-title" id="formSectionTitle">Add Student</div>
+        <div class="form-container">
+            <form id="studentForm">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>NIM <span style="color: #d32f2f;">*</span></label>
+                        <input type="text" id="nim" required>
+                    </div>
+                    <div class="form-group">
+                        <label>First Name <span style="color: #d32f2f;">*</span></label>
+                        <input type="text" id="namaDepan" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Last Name</label>
+                        <input type="text" id="namaBelakang">
+                    </div>
+                    <div class="form-group">
+                        <label>Date of Birth <span style="color: #d32f2f;">*</span></label>
+                        <input type="date" id="tanggalLahir" required>
+                    </div>
+                </div>
+                <div class="form-actions">
+                    <button type="submit" class="btn-primary" id="submitBtn">Add Student</button>
+                    <button type="button" class="btn-secondary" id="cancelBtn" style="display: none;">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="section">
+        <div class="section-title">Student List</div>
+        <div id="loadingState" class="loading">Loading data...</div>
+        <div id="emptyState" class="empty" style="display: none;">No students found.</div>
+        <table id="studentsTable">
+            <thead>
+            <tr>
+                <th>NIM</th>
+                <th>Full Name</th>
+                <th>Date of Birth</th>
+                <th>Age</th>
+                <th width="160">Actions</th>
+            </tr>
+            </thead>
+            <tbody id="studentsBody"></tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+    const API_URL = '/api/students';
+    let editMode = false;
+    let currentNim = null;
+
+    document.addEventListener('DOMContentLoaded', loadStudents);
+
+    document.getElementById('studentForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        const data = {
+            nim: document.getElementById('nim').value,
+            namaDepan: document.getElementById('namaDepan').value,
+            namaBelakang: document.getElementById('namaBelakang').value || null,
+            tanggalLahir: document.getElementById('tanggalLahir').value
+        };
+
+        if (editMode) {
+            await updateStudent(currentNim, data);
+        } else {
+            await createStudent(data);
+        }
+    });
+
+    document.getElementById('cancelBtn').addEventListener('click', resetForm);
+
+    async function loadStudents() {
+        try {
+            showLoading();
+            const response = await fetch(API_URL);
+            const students = await response.json();
+            displayStudents(students);
+        } catch (error) {
+            showError('Failed to load students');
+            hideLoading();
+        }
+    }
+
+    async function createStudent(data) {
+        try {
+            const response = await fetch(API_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            });
+
+            if (!response.ok) {
+                const error = await response.json();
+                throw new Error(error.message);
+            }
+
+            showSuccess('Student added successfully');
+            resetForm();
+            loadStudents();
+        } catch (error) {
+            showError(error.message);
+        }
+    }
+
+    async function updateStudent(nim, data) {
+        try {
+            const { nim: _, ...updateData } = data;
+
+            const response = await fetch(`${API_URL}/${nim}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(updateData)
+            });
+
+            if (!response.ok) {
+                const error = await response.json();
+                throw new Error(error.message);
+            }
+
+            showSuccess('Student updated successfully');
+            resetForm();
+            loadStudents();
+        } catch (error) {
+            showError(error.message);
+        }
+    }
+
+    async function deleteStudent(nim) {
+        if (!confirm('Delete this student?')) return;
+
+        try {
+            const response = await fetch(`${API_URL}/${nim}`, { method: 'DELETE' });
+            if (!response.ok) throw new Error('Delete failed');
+
+            showSuccess('Student deleted successfully');
+            loadStudents();
+        } catch (error) {
+            showError(error.message);
+        }
+    }
+
+    async function editStudent(nim) {
+        try {
+            const response = await fetch(`${API_URL}/${nim}`);
+            const student = await response.json();
+
+            document.getElementById('nim').value = student.nim;
+            document.getElementById('nim').disabled = true;
+            document.getElementById('namaDepan').value = student.namaDepan;
+            document.getElementById('namaBelakang').value = student.namaBelakang || '';
+            document.getElementById('tanggalLahir').value = student.tanggalLahir;
+
+            document.getElementById('formSectionTitle').textContent = 'Edit Student';
+            document.getElementById('submitBtn').textContent = 'Update Student';
+            document.getElementById('cancelBtn').style.display = 'inline-block';
+
+            editMode = true;
+            currentNim = nim;
+        } catch (error) {
+            showError(error.message);
+        }
+    }
+
+    function displayStudents(students) {
+        const tbody = document.getElementById('studentsBody');
+        const table = document.getElementById('studentsTable');
+        const empty = document.getElementById('emptyState');
+
+        hideLoading();
+
+        if (students.length === 0) {
+            table.style.display = 'none';
+            empty.style.display = 'block';
+            return;
+        }
+
+        table.style.display = 'table';
+        empty.style.display = 'none';
+
+        tbody.innerHTML = students.map(s => `
+            <tr>
+                <td><strong>${s.nim}</strong></td>
+                <td>${s.namaLengkap}</td>
+                <td>${s.tanggalLahir}</td>
+                <td>${s.usia} years</td>
+                <td>
+                    <button class="btn-action btn-edit" onclick="editStudent('${s.nim}')">Edit</button>
+                    <button class="btn-action btn-delete" onclick="deleteStudent('${s.nim}')">Delete</button>
+                </td>
+            </tr>
+        `).join('');
+    }
+
+    function resetForm() {
+        document.getElementById('studentForm').reset();
+        document.getElementById('nim').disabled = false;
+        document.getElementById('formSectionTitle').textContent = 'Add Student';
+        document.getElementById('submitBtn').textContent = 'Add Student';
+        document.getElementById('cancelBtn').style.display = 'none';
+        editMode = false;
+        currentNim = null;
+    }
+
+    function showSuccess(msg) {
+        const el = document.getElementById('alertSuccess');
+        el.textContent = msg;
+        el.style.display = 'block';
+        setTimeout(() => el.style.display = 'none', 4000);
+    }
+
+    function showError(msg) {
+        const el = document.getElementById('alertError');
+        el.textContent = msg;
+        el.style.display = 'block';
+        setTimeout(() => el.style.display = 'none', 4000);
+    }
+
+    function showLoading() {
+        document.getElementById('loadingState').style.display = 'block';
+        document.getElementById('studentsTable').style.display = 'none';
+        document.getElementById('emptyState').style.display = 'none';
+    }
+
+    function hideLoading() {
+        document.getElementById('loadingState').style.display = 'none';
+    }
+</script>
+</body>
+</html>
